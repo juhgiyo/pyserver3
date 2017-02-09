@@ -1,10 +1,10 @@
 #!/usr/bin/python
 """
-@file asyncoreUDP.py
+@file asyncUDP.py
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
         <http://github.com/juhgiyo/pyserver>
 @date March 10, 2016
-@brief AsyncoreUDP Interface
+@brief AsyncUDP Interface
 @version 0.1
 
 @section LICENSE
@@ -33,10 +33,10 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-AsyncoreUDP Class.
+AsyncUDP Class.
 """
-import Queue
-import asyncore
+import queue
+import asyncio
 import socket
 import traceback
 from .callbackInterface import *
@@ -84,7 +84,7 @@ class AsyncUDP(asyncio.Protocol):
             self.callback.on_started(self)
 
         self.loop = asyncio.get_event_loop()
-        coro = loop.create_datagram_endpoint(lambda: self, sock=self.sock)
+        coro = self.loop.create_datagram_endpoint(lambda: self, sock=self.sock)
 
   # Even though UDP is connectionless this is called when it binds to a port
     def connection_made(self, transport):
@@ -98,26 +98,6 @@ class AsyncUDP(asyncio.Protocol):
         except Exception as e:
             print(e)
             traceback.print_exc()
-
-    # This is called all the time and causes errors if you leave it out.
-    def handle_write(self):
-        if not self.send_queue.empty():
-            send_obj = self.send_queue.get()
-            state = State.SUCCESS
-            try:
-                sent = self.sendto(send_obj['data'], (send_obj['hostname'], send_obj['port']))
-                if sent < len(send_obj['data']):
-                    state = State.FAIL_SOCKET_ERROR
-            except Exception as e:
-                print(e)
-                traceback.print_exc()
-                state = State.FAIL_SOCKET_ERROR
-            try:
-                if self.callback is not None:
-                    self.callback.on_sent(self, state, send_obj['data'])
-            except Exception as e:
-                print(e)
-                traceback.print_exc()
 
     def connection_lost(self, exc):
         self.close()
@@ -172,4 +152,4 @@ class AsyncUDP(asyncio.Protocol):
 # Echo udp server test
 # def readHandle(sock,addr, data):
 #   sock.send(addr[0],addr[1],data)
-# server=AsyncoreUDP(5005,readHandle)
+# server=AsyncUDP(5005,readHandle)

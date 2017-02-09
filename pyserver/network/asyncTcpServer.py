@@ -1,10 +1,10 @@
 #!/usr/bin/python
 """
-@file asyncoreTcpServer.py
+@file asyncTcpServer.py
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
         <http://github.com/juhgiyo/pyserver>
 @date March 10, 2016
-@brief AsyncoreTcpServer Interface
+@brief AsyncTcpServer Interface
 @version 0.1
 
 @section LICENSE
@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-AsyncoreTcpServer Class.
+AsyncTcpServer Class.
 """
 import asyncio
 import socket
@@ -199,7 +199,7 @@ class AsyncTcpServer(asyncio.Protocol):
         AsyncController.instance().add(self)
         
         self.loop = asyncio.get_event_loop()
-        self.server = loop.create_server(lambda: self, sock=sock)
+        self.server = self.loop.create_server(lambda: self, sock=self.sock)
 
         if self.callback is not None:
             self.callback.on_started(self)

@@ -36,7 +36,7 @@ THE SOFTWARE.
 AsyncMulticast Class.
 """
 
-import Queue
+import queue
 import asyncio
 import socket
 import traceback
@@ -126,7 +126,7 @@ class AsyncMulticast(asyncio.Protocol):
             self.callback_obj.on_started(self)
 
         self.loop = asyncio.get_event_loop()
-        coro = loop.create_datagram_endpoint(lambda: self, sock=self.sock)
+        coro = self.loop.create_datagram_endpoint(lambda: self, sock=self.sock)
 
     # Even though UDP is connectionless this is called when it binds to a port
     def connection_made(self, transport):

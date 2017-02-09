@@ -1,10 +1,10 @@
 #!/usr/bin/python
 """
-@file asyncoreTcpClient.py
+@file asyncTcpClient.py
 @author Woong Gyu La a.k.a Chris. <juhgiyo@gmail.com>
         <http://github.com/juhgiyo/pyserver>
 @date March 10, 2016
-@brief AsyncoreTcpClient Interface
+@brief AsyncTcpClient Interface
 @version 0.1
 
 @section LICENSE
@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 @section DESCRIPTION
 
-AsyncoreTcpClient Class.
+AsyncTcpClient Class.
 """
 import asyncio
 import socket
@@ -95,7 +95,7 @@ class AsyncTcpClient(asyncio.Protocol):
 
 
         self.loop = asyncio.get_event_loop()
-        coro = loop.create_connection(lambda: self, sock=self.sock)
+        coro = self.loop.create_connection(lambda: self, sock=self.sock)
 
 
     def connection_made(self, transport):
