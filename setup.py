@@ -6,13 +6,13 @@ except Exception:
     version = '0.0.0-dev'
 
 setup(
-  name = 'pyserver',
+  name = 'pyserver3',
   packages = find_packages(exclude=["dist"]),
   description = 'TCP/UDP Aysnchronous Server/Client Library',
   author = 'Woong Gyu La',
   author_email = 'juhgiyo@gmail.com',
   version=version,
-  url = 'https://github.com/juhgiyo/pyserver', # use the URL to the github repo
+  url = 'https://github.com/juhgiyo/pyserver3', # use the URL to the github repo
   keywords = ['tcp', 'udp', 'server', 'library'], # arbitrary keywords
   license="The MIT License (MIT)",
   install_requires=['pyserialize'],
@@ -21,7 +21,7 @@ setup(
     #   3 - Alpha
     #   4 - Beta
     #   5 - Production/Stable
-    'Development Status :: 5 - Production/Stable',
-    'Programming Language :: Python :: 2.7',
+    'Development Status :: 4 - Beta',
+    'Programming Language :: Python :: 3.6',
   ],
 )
