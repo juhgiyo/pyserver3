@@ -50,6 +50,8 @@ class AsyncController(threading.Thread):
         threading.Thread.__init__(self)
         self.should_stop_event = threading.Event()
         self.has_module_event = threading.Event()
+        self.resume_event = threading.Event()
+        self.resume_event.set()
         self.lock = threading.RLock()
         self.module_set = set([])
         self.timeout = 0.1
@@ -60,18 +62,28 @@ class AsyncController(threading.Thread):
         self.start()
 
     def run(self):
-        self.has_module_event.wait()
-        try:
-            self.loop.run_forever()
-        except Exception as e:
-            print(e)
-            traceback.print_exc()
+        while  not self.should_stop_event.is_set():
+            self.has_module_event.wait()
+            self.resume_event.wait()
+            try:
+                self.loop.run_forever()
+            except Exception as e:
+                print(e)
+                traceback.print_exc()
+                self.loop.stop()
 
         self.loop.close()
         self.has_module_event.wait()
         self.has_module_event.clear()
         print('async Thread exiting...')
-        
+    
+    def pause(self):
+        self.resume_event.clear()
+        self.loop.stop()
+
+    def resume(self):
+        self.resume_event.set()
+
     def stop(self):
         with self.lock:
             delete_set = copy.copy(self.module_set)
@@ -84,6 +96,7 @@ class AsyncController(threading.Thread):
             self.module_set = set([])
             self.loop.stop()
         self.should_stop_event.set()
+        self.resume_event.set()
         self.has_module_event.set()
 
     def add(self, module):

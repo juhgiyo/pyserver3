@@ -72,7 +72,7 @@ class AsyncTcpClient(asyncio.Protocol):
         self.addr = (hostname, port)
         self.send_queue = deque()  # thread-safe dequeue
         self.transport_dict = {'packet': None, 'type': PacketType.SIZE, 'size': SIZE_PACKET_LENGTH, 'offset': 0}
-        self.transport=None
+        
         self.recv_buffer=[]
 
         self.sock= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -81,8 +81,8 @@ class AsyncTcpClient(asyncio.Protocol):
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         err = None
         try:
-            self.create_connection((hostname, port))
-            AsyncTcpClient.instance().add(self)
+            self.sock.connect((hostname, port))
+            AsyncController.instance().add(self)
         except Exception as e:
             err = e
         finally:
@@ -96,7 +96,9 @@ class AsyncTcpClient(asyncio.Protocol):
 
         self.loop = asyncio.get_event_loop()
         coro = self.loop.create_connection(lambda: self, sock=self.sock)
-
+        AsyncController.instance().pause()
+        (self.transport,_)=self.loop.run_until_complete(coro)
+        AsyncController.instance().resume()
 
     def connection_made(self, transport):
         self.transport=transport

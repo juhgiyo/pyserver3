@@ -127,6 +127,9 @@ class AsyncMulticast(asyncio.Protocol):
 
         self.loop = asyncio.get_event_loop()
         coro = self.loop.create_datagram_endpoint(lambda: self, sock=self.sock)
+        AsyncController.instance().pause()
+        (self.transport,_)=self.loop.run_until_complete(coro)
+        AsyncController.instance().resume()
 
     # Even though UDP is connectionless this is called when it binds to a port
     def connection_made(self, transport):

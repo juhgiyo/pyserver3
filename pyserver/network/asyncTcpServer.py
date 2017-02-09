@@ -199,6 +199,8 @@ class AsyncTcpServer(asyncio.Protocol):
         AsyncController.instance().add(self)
         
         self.loop = asyncio.get_event_loop()
+        #coro = self.loop.create_server(lambda: self, sock=self.sock)
+        #(self.server,_)=self.loop.run_until_complete(coro)
         self.server = self.loop.create_server(lambda: self, sock=self.sock)
 
         if self.callback is not None:
