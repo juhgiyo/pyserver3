@@ -40,7 +40,6 @@ import threading
 
 from pyserver.util.singleton import Singleton
 # noinspection PyDeprecation
-from sets import Set
 import traceback
 import copy
 
@@ -52,7 +51,7 @@ class AsyncController(threading.Thread):
         self.should_stop_event = threading.Event()
         self.has_module_event = threading.Event()
         self.lock = threading.RLock()
-        self.module_set = Set([])
+        self.module_set = set([])
         self.timeout = 0.1
 
         self.loop=asyncio.get_event_loop()
@@ -82,7 +81,7 @@ class AsyncController(threading.Thread):
                 except Exception as e:
                     print(e)
                     traceback.print_exc()
-            self.module_set = Set([])
+            self.module_set = set([])
             self.loop.stop()
         self.should_stop_event.set()
         self.has_module_event.set()
@@ -101,7 +100,7 @@ class AsyncController(threading.Thread):
                 except Exception as e:
                     print(e)
                     traceback.print_exc()
-            self.module_set = Set([])
+            self.module_set = set([])
         if not self.should_stop_event.is_set():
             self.has_module_event.clear()
 

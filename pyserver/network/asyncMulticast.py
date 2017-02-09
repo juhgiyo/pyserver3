@@ -46,7 +46,6 @@ from .serverConf import *
 from .callbackInterface import *
 from .asyncController import AsyncController
 # noinspection PyDeprecation
-from sets import Set
 import copy
 
 IP_MTU_DISCOVER = 10
@@ -85,7 +84,7 @@ class AsyncMulticast(asyncio.Protocol):
         self.MAX_MTU = 1500
         self.callback_obj = None
         self.port = port
-        self.multicastSet = Set([])
+        self.multicastSet = set([])
         self.lock = threading.RLock()
         self.ttl = ttl
         self.enable_loopback = enable_loopback
@@ -161,7 +160,7 @@ class AsyncMulticast(asyncio.Protocol):
                 if self.callback_obj is not None:
                     self.callback_obj.on_leave(self, multicast_addr)
             with self.lock:
-                self.multicastSet = Set([])
+                self.multicastSet = set([])
         except Exception as e:
             print(e)
 

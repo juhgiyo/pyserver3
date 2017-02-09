@@ -45,7 +45,6 @@ from .callbackInterface import *
 from .serverConf import *
 from .preamble import *
 # noinspection PyDeprecation
-from sets import Set
 import traceback
 import copy
 
@@ -175,7 +174,7 @@ class AsyncTcpServer(asyncio.Protocol):
     def __init__(self, port, callback, acceptor, bind_addr='', no_delay=True):
         self.is_closing = False
         self.lock = threading.RLock()
-        self.sock_set = Set([])
+        self.sock_set = set([])
 
         self.acceptor = None
         if acceptor is not None and isinstance(acceptor, IAcceptor):
@@ -239,7 +238,7 @@ class AsyncTcpServer(asyncio.Protocol):
                 delete_set = copy.copy(self.sock_set)
                 for item in delete_set:
                     item.close()
-                self.sock_set = Set([])
+                self.sock_set = set([])
             self.server.close()
             AsyncController.instance().discard(self)
             if self.callback is not None:
@@ -258,7 +257,7 @@ class AsyncTcpServer(asyncio.Protocol):
             delete_set = copy.copy(self.sock_set)
             for item in delete_set:
                 item.close()
-            self.sock_set = Set([])
+            self.sock_set = set([])
 
     def get_socket_list(self):
         with self.lock:
