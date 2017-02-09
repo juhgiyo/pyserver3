@@ -175,7 +175,7 @@ class AsyncTcpClient(asyncio.Protocol):
             traceback.print_exc()
 
     def gethostbyname(self, arg):
-        return self.socket.gethostbyname(arg)
+        return self.sock.gethostbyname(arg)
 
     def gethostname(self):
-        return self.socket.gethostname()
+        return self.sock.gethostname()

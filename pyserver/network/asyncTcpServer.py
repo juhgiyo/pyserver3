@@ -60,7 +60,7 @@ function
 '''
 
 
-class AsyncoreTcpSocket(asyncio.Protocol):
+class AsyncTcpSocket(asyncio.Protocol):
     def __init__(self, server, transport, addr, callback):
         self.server = server
         self.is_closing = False
