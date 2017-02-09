@@ -22,6 +22,6 @@ setup(
     #   4 - Beta
     #   5 - Production/Stable
     'Development Status :: 4 - Beta',
-    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.4',
   ],
 )
