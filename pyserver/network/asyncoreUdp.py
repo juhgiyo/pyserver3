@@ -39,9 +39,9 @@ import Queue
 import asyncore
 import socket
 import traceback
-from callbackInterface import *
-from serverConf import *
-from asyncoreController import AsyncoreController
+from .callbackInterface import *
+from .serverConf import *
+from .asyncController import AsyncController
 
 IP_MTU_DISCOVER = 10
 IP_PMTUDISC_DONT = 0  # Never send DF frames.
@@ -59,9 +59,8 @@ functions
 '''
 
 
-class AsyncoreUDP(asyncore.dispatcher):
+class AsyncUDP(asyncio.Protocol):
     def __init__(self, port, callback, bindaddress=''):
-        asyncore.dispatcher.__init__(self)
         # self.lock = threading.RLock()
         self.MAX_MTU = 1500
         self.callback = None
@@ -71,35 +70,34 @@ class AsyncoreUDP(asyncore.dispatcher):
         else:
             raise Exception('callback is None or not an instance of IUdpCallback class')
         try:
-            self.create_socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            # self.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.set_reuse_addr()
-            self.bind((bindaddress, port))
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.sock.bind((bindaddress, port))
         except Exception as e:
             print e
             traceback.print_exc()
-        self.send_queue = Queue.Queue()  # thread-safe queue
-        AsyncoreController.instance().add(self)
+        
+        self.transport=None
+        AsyncController.instance().add(self)
         if self.callback is not None:
             self.callback.on_started(self)
 
-    # Even though UDP is connectionless this is called when it binds to a port
-    def handle_connect(self):
-        pass
+        self.loop = asyncio.get_event_loop()
+        coro = loop.create_datagram_endpoint(lambda: self, sock=self.sock)
+
+  # Even though UDP is connectionless this is called when it binds to a port
+    def connection_made(self, transport):
+        self.transport=transport
 
     # This is called everytime there is something to read
-    def handle_read(self):
+    def data_received(self, data, addr):
         try:
-            data, addr = self.recvfrom(self.MAX_MTU)
-            if data and self.callback is not None:
-                self.callback.on_received(self, addr, data)
+            if data and self.callback_obj is not None:
+                self.callback_obj.on_received(self, addr, data)
         except Exception as e:
             print e
             traceback.print_exc()
-
-    def writable(self):
-        return not self.send_queue.empty()
 
     # This is called all the time and causes errors if you leave it out.
     def handle_write(self):
@@ -121,16 +119,20 @@ class AsyncoreUDP(asyncore.dispatcher):
                 print e
                 traceback.print_exc()
 
+    def connection_lost(self, exc):
+        self.close()
+
     def close(self):
         self.handle_close()
 
-    def handle_error(self):
+    def error_received(self, exc):
         self.handle_close()
 
+
     def handle_close(self):
-        print 'asyncoreUdp close called'
-        asyncore.dispatcher.close(self)
-        AsyncoreController.instance().discard(self)
+        print 'asyncUdp close called'
+        self.transport.close()
+        AsyncController.instance().discard(self)
         try:
             if self.callback is not None:
                 self.callback.on_stopped(self)
@@ -141,29 +143,29 @@ class AsyncoreUDP(asyncore.dispatcher):
     # noinspection PyMethodOverriding
     def send(self, hostname, port, data):
         if len(data) <= self.MAX_MTU:
-            self.send_queue.put({'hostname': hostname, 'port': port, 'data': data})
+            self.transport.sendto(data,(hostname,port))
         else:
             raise ValueError("The data size is too large")
 
     def gethostbyname(self, arg):
-        return self.socket.gethostbyname(arg)
+        return self.sock.gethostbyname(arg)
 
     def gethostname(self):
-        return self.socket.gethostname()
+        return self.sock.gethostname()
 
     def get_mtu_size(self):
         return self.MAX_MTU
 
     def check_mtu_size(self, hostname, port):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(hostname, port)
+        s.connect((hostname, port))
         s.setsockopt(socket.IPPROTO_IP, IP_MTU_DISCOVER, IP_PMTUDISC_DO)
 
         max_mtu = self.MAX_MTU
         try:
             s.send('#' * max_mtu)
         except socket.error:
-            option = getattr(socket.IPPROTO_IP, 'IP_MTU', 14)
+            option = self.sock.getsockopt(socket.IPPROTO_IP, 'IP_MTU', 14)
             max_mtu = s.getsockopt(socket.IPPROTO_IP, option)
         return max_mtu
 
