@@ -138,9 +138,6 @@ class AsyncTcpClient(asyncio.Protocol):
             print e
             traceback.print_exc()
 
-
-        print('Data received: {!r}'.format(data.decode()))
-
     def connection_lost(self, exc):
         self.close()
 

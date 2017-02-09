@@ -131,7 +131,7 @@ class AsyncTcpSocket(asyncio.Protocol):
 
     def handle_close(self):
         try:
-            print 'asyncoreTcpSocket close called'
+            print('asyncTcpSocket close called')
             self.is_closing = True
             self.transport.close()
             self.server.discard_socket(self)
@@ -233,7 +233,7 @@ class AsyncTcpServer(asyncio.Protocol):
 
     def handle_close(self):
         try:
-            print 'asyncoreTcpServer close called'
+            print('asyncTcpServer close called')
             self.is_closing = True
             with self.lock:
                 delete_set = copy.copy(self.sock_set)
@@ -249,7 +249,7 @@ class AsyncTcpServer(asyncio.Protocol):
             traceback.print_exc()
 
     def discard_socket(self, sock):
-        print 'asyncoreTcpServer discard socket called'
+        print('asyncTcpServer discard socket called')
         with self.lock:
             self.sock_set.discard(sock)
 

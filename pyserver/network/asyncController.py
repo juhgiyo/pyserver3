@@ -71,7 +71,7 @@ class AsyncController(threading.Thread):
         self.loop.close()
         self.has_module_event.wait()
         self.has_module_event.clear()
-        print 'asyncore Thread exiting...'
+        print('asyncore Thread exiting...')
         
     def stop(self):
         with self.lock:
@@ -106,7 +106,7 @@ class AsyncController(threading.Thread):
             self.has_module_event.clear()
 
     def discard(self, module):
-        print 'asyncoreController discard called'
+        print('asyncoreController discard called')
         with self.lock:
             self.module_set.discard(module)
             if len(self.module_set) == 0 and not self.should_stop_event.is_set():

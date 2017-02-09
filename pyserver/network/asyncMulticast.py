@@ -165,7 +165,7 @@ class AsyncMulticast(asyncio.Protocol):
         except Exception as e:
             print e
 
-        print 'asyncUdp close called'
+        print('asyncUdp close called')
         self.transport.close()
         AsyncController.instance().discard(self)
         try:
