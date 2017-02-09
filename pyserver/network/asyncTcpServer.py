@@ -115,7 +115,7 @@ class AsyncTcpSocket(asyncio.Protocol):
                     self.transport_dict = {'packet': None, 'type': PacketType.SIZE, 'size': SIZE_PACKET_LENGTH, 'offset': 0}
                     self.callback.on_received(self, receive_packet['packet'])
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
     def connection_lost(self, exc):
@@ -139,7 +139,7 @@ class AsyncTcpSocket(asyncio.Protocol):
             if self.callback is not None:
                 self.callback.on_disconnect(self)
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
     def send(self, data):
@@ -149,7 +149,7 @@ class AsyncTcpSocket(asyncio.Protocol):
             if self.callback is not None:
                 self.callback.on_sent(self, state, data)
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
     def gethostbyname(self, arg):
@@ -219,7 +219,7 @@ class AsyncTcpServer(asyncio.Protocol):
                     if self.callback is not None:
                         self.callback.on_accepted(self, sock_obj)
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
 
@@ -245,7 +245,7 @@ class AsyncTcpServer(asyncio.Protocol):
             if self.callback is not None:
                 self.callback.on_stopped(self)
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
     def discard_socket(self, sock):

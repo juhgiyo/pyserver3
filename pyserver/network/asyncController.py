@@ -65,7 +65,7 @@ class AsyncController(threading.Thread):
         try:
             self.loop.run_forever()
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
         self.loop.close()
@@ -80,7 +80,7 @@ class AsyncController(threading.Thread):
                 try:
                     item.close()
                 except Exception as e:
-                    print e
+                    print(e)
                     traceback.print_exc()
             self.module_set = Set([])
             self.loop.stop()
@@ -99,7 +99,7 @@ class AsyncController(threading.Thread):
                 try:
                     item.close()
                 except Exception as e:
-                    print e
+                    print(e)
                     traceback.print_exc()
             self.module_set = Set([])
         if not self.should_stop_event.is_set():

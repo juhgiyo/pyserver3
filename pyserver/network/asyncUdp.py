@@ -75,7 +75,7 @@ class AsyncUDP(asyncio.Protocol):
             self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.sock.bind((bindaddress, port))
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
         
         self.transport=None
@@ -96,7 +96,7 @@ class AsyncUDP(asyncio.Protocol):
             if data and self.callback_obj is not None:
                 self.callback_obj.on_received(self, addr, data)
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
     # This is called all the time and causes errors if you leave it out.
@@ -109,14 +109,14 @@ class AsyncUDP(asyncio.Protocol):
                 if sent < len(send_obj['data']):
                     state = State.FAIL_SOCKET_ERROR
             except Exception as e:
-                print e
+                print(e)
                 traceback.print_exc()
                 state = State.FAIL_SOCKET_ERROR
             try:
                 if self.callback is not None:
                     self.callback.on_sent(self, state, send_obj['data'])
             except Exception as e:
-                print e
+                print(e)
                 traceback.print_exc()
 
     def connection_lost(self, exc):
@@ -130,14 +130,14 @@ class AsyncUDP(asyncio.Protocol):
 
 
     def handle_close(self):
-        print 'asyncUdp close called'
+        print('asyncUdp close called')
         self.transport.close()
         AsyncController.instance().discard(self)
         try:
             if self.callback is not None:
                 self.callback.on_stopped(self)
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
     # noinspection PyMethodOverriding

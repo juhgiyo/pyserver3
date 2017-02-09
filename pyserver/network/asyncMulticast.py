@@ -118,7 +118,7 @@ class AsyncMulticast(asyncio.Protocol):
             # for RECEIVE to receive from multiple multicast groups
             self.sock.bind(('', port))
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
         
         self.transport=None
@@ -139,10 +139,10 @@ class AsyncMulticast(asyncio.Protocol):
             if data and self.callback_obj is not None:
                 self.callback_obj.on_received(self, addr, data)
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
     
-   def connection_lost(self, exc):
+    def connection_lost(self, exc):
         self.close()
 
     def close(self):
@@ -163,7 +163,7 @@ class AsyncMulticast(asyncio.Protocol):
             with self.lock:
                 self.multicastSet = Set([])
         except Exception as e:
-            print e
+            print(e)
 
         print('asyncUdp close called')
         self.transport.close()
@@ -172,7 +172,7 @@ class AsyncMulticast(asyncio.Protocol):
             if self.callback_obj is not None:
                 self.callback_obj.on_stopped(self)
         except Exception as e:
-            print e
+            print(e)
             traceback.print_exc()
 
     # noinspection PyMethodOverriding
@@ -203,7 +203,7 @@ class AsyncMulticast(asyncio.Protocol):
                     if self.callback_obj is not None:
                         self.callback_obj.on_leave(self, multicast_addr)
             except Exception as e:
-                print e
+                print(e)
 
     def getgrouplist(self):
         with self.lock:
