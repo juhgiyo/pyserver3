@@ -73,9 +73,9 @@ class AsyncTcpClient(asyncio.Protocol):
         self.send_queue = deque()  # thread-safe dequeue
         self.transport_dict = {'packet': None, 'type': PacketType.SIZE, 'size': SIZE_PACKET_LENGTH, 'offset': 0}
         
-        self.recv_buffer=[]
+        self.recv_buffer = []
 
-        self.sock= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if no_delay:
             self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -93,15 +93,14 @@ class AsyncTcpClient(asyncio.Protocol):
             thread = threading.Thread(target=callback_connection)
             thread.start()
 
-
         self.loop = asyncio.get_event_loop()
         coro = self.loop.create_connection(lambda: self, sock=self.sock)
         AsyncController.instance().pause()
-        (self.transport,_)=self.loop.run_until_complete(coro)
+        (self.transport, _) = self.loop.run_until_complete(coro)
         AsyncController.instance().resume()
 
     def connection_made(self, transport):
-        self.transport=transport
+        self.transport = transport
 
     def data_received(self, data):
         try:
@@ -110,7 +109,7 @@ class AsyncTcpClient(asyncio.Protocol):
 
             self.recv_buffer.concat(data)
             data = self.recv_buffer[:self.transport_dict['size']]
-            self.recv_buffer=self.recv_buffer[self.transport_dict['size']:]
+            self.recv_buffer = self.recv_buffer[self.transport_dict['size']:]
 
             if self.transport_dict['packet'] is None:
                 self.transport_dict['packet'] = data
@@ -134,7 +133,8 @@ class AsyncTcpClient(asyncio.Protocol):
                     self.transport_dict = {'packet': None, 'type': PacketType.DATA, 'size': should_receive, 'offset': 0}
                 else:
                     receive_packet = self.transport_dict
-                    self.transport_dict = {'packet': None, 'type': PacketType.SIZE, 'size': SIZE_PACKET_LENGTH, 'offset': 0}
+                    self.transport_dict = {'packet': None, 'type': PacketType.SIZE, 'size': SIZE_PACKET_LENGTH,
+                                           'offset': 0}
                     self.callback.on_received(self, receive_packet['packet'])
         except Exception as e:
             print(e)
@@ -142,7 +142,6 @@ class AsyncTcpClient(asyncio.Protocol):
 
     def connection_lost(self, exc):
         self.close()
-
 
     def close(self):
         if not self.is_closing:

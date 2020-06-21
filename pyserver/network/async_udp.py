@@ -35,12 +35,10 @@ THE SOFTWARE.
 
 AsyncUDP Class.
 """
-import queue
 import asyncio
 import socket
 import traceback
 from .callback_interface import *
-from .server_conf import *
 from .async_controller import AsyncController
 
 IP_MTU_DISCOVER = 10
@@ -78,7 +76,7 @@ class AsyncUDP(asyncio.Protocol):
             print(e)
             traceback.print_exc()
         
-        self.transport=None
+        self.transport = None
         AsyncController.instance().add(self)
         if self.callback is not None:
             self.callback.on_started(self)
@@ -86,12 +84,12 @@ class AsyncUDP(asyncio.Protocol):
         self.loop = asyncio.get_event_loop()
         coro = self.loop.create_datagram_endpoint(lambda: self, sock=self.sock)
         AsyncController.instance().pause()
-        (self.transport,_)=self.loop.run_until_complete(coro)
+        (self.transport, _) = self.loop.run_until_complete(coro)
         AsyncController.instance().resume()
 
-  # Even though UDP is connectionless this is called when it binds to a port
+    # Even though UDP is connectionless this is called when it binds to a port
     def connection_made(self, transport):
-        self.transport=transport
+        self.transport = transport
 
     # This is called everytime there is something to read
     def data_received(self, data, addr):
@@ -111,7 +109,6 @@ class AsyncUDP(asyncio.Protocol):
     def error_received(self, exc):
         self.handle_close()
 
-
     def handle_close(self):
         print('asyncUdp close called')
         self.transport.close()
@@ -126,7 +123,7 @@ class AsyncUDP(asyncio.Protocol):
     # noinspection PyMethodOverriding
     def send(self, hostname, port, data):
         if len(data) <= self.MAX_MTU:
-            self.transport.sendto(data,(hostname,port))
+            self.transport.sendto(data, (hostname, port))
         else:
             raise ValueError("The data size is too large")
 

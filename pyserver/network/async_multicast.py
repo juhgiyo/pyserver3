@@ -36,13 +36,11 @@ THE SOFTWARE.
 AsyncMulticast Class.
 """
 
-import queue
 import asyncio
 import socket
 import traceback
 import threading
 
-from .server_conf import *
 from .callback_interface import *
 from .async_controller import AsyncController
 # noinspection PyDeprecation
@@ -93,7 +91,7 @@ class AsyncMulticast(asyncio.Protocol):
         else:
             raise Exception('callback_obj is None or not an instance of IUdpCallback class')
         try:
-            self.sock= socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
@@ -120,7 +118,7 @@ class AsyncMulticast(asyncio.Protocol):
             print(e)
             traceback.print_exc()
         
-        self.transport=None
+        self.transport = None
         AsyncController.instance().add(self)
         if self.callback_obj is not None:
             self.callback_obj.on_started(self)
@@ -128,12 +126,12 @@ class AsyncMulticast(asyncio.Protocol):
         self.loop = asyncio.get_event_loop()
         coro = self.loop.create_datagram_endpoint(lambda: self, sock=self.sock)
         AsyncController.instance().pause()
-        (self.transport,_)=self.loop.run_until_complete(coro)
+        (self.transport, _) = self.loop.run_until_complete(coro)
         AsyncController.instance().resume()
 
     # Even though UDP is connectionless this is called when it binds to a port
     def connection_made(self, transport):
-        self.transport=transport
+        self.transport = transport
 
     # This is called everytime there is something to read
     def data_received(self, data, addr):
@@ -159,7 +157,7 @@ class AsyncMulticast(asyncio.Protocol):
             delete_set = self.getgrouplist()
             for multicast_addr in delete_set:
                 self.sock.setsockopt(socket.SOL_IP, socket.IP_DROP_MEMBERSHIP,
-                                socket.inet_aton(multicast_addr) + socket.inet_aton('0.0.0.0'))
+                                     socket.inet_aton(multicast_addr) + socket.inet_aton('0.0.0.0'))
                 if self.callback_obj is not None:
                     self.callback_obj.on_leave(self, multicast_addr)
             with self.lock:
@@ -180,7 +178,7 @@ class AsyncMulticast(asyncio.Protocol):
     # noinspection PyMethodOverriding
     def send(self, hostname, port, data):
         if len(data) <= self.MAX_MTU:
-            self.transport.sendto(data,(hostname,port))
+            self.transport.sendto(data, (hostname, port))
         else:
             raise ValueError("The data size is too large")
 
@@ -189,7 +187,7 @@ class AsyncMulticast(asyncio.Protocol):
         with self.lock:
             if multicast_addr not in self.multicastSet:
                 self.sock.setsockopt(socket.SOL_IP, socket.IP_ADD_MEMBERSHIP,
-                                socket.inet_aton(multicast_addr) + socket.inet_aton(self.bind_addr))
+                                     socket.inet_aton(multicast_addr) + socket.inet_aton(self.bind_addr))
                 self.multicastSet.add(multicast_addr)
                 if self.callback_obj is not None:
                     self.callback_obj.on_join(self, multicast_addr)
@@ -200,7 +198,7 @@ class AsyncMulticast(asyncio.Protocol):
             try:
                 if multicast_addr in self.multicastSet:
                     self.sock.setsockopt(socket.SOL_IP, socket.IP_DROP_MEMBERSHIP,
-                                    socket.inet_aton(multicast_addr) + socket.inet_aton('0.0.0.0'))
+                                         socket.inet_aton(multicast_addr) + socket.inet_aton('0.0.0.0'))
                     self.multicastSet.discard(multicast_addr)
                     if self.callback_obj is not None:
                         self.callback_obj.on_leave(self, multicast_addr)

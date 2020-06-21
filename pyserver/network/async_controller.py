@@ -56,13 +56,13 @@ class AsyncController(threading.Thread):
         self.module_set = set([])
         self.timeout = 0.1
 
-        self.loop=asyncio.get_event_loop()
+        self.loop = asyncio.get_event_loop()
 
         # Self start the thread
         self.start()
 
     def run(self):
-        while  not self.should_stop_event.is_set():
+        while not self.should_stop_event.is_set():
             self.has_module_event.wait()
             self.resume_event.wait()
             try:

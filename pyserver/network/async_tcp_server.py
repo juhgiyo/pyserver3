@@ -70,8 +70,8 @@ class AsyncTcpSocket(asyncio.Protocol):
             raise Exception('callback is None or not an instance of ITcpSocketCallback class')
         self.sock = transport.get_extra_info('socket')
         self.addr = addr
-        self.transport=transport
-        self.recv_buffer=[]
+        self.transport = transport
+        self.recv_buffer = []
         self.transport_dict = {'packet': None, 'type': PacketType.SIZE, 'size': SIZE_PACKET_LENGTH, 'offset': 0}
         self.send_queue = deque()  # thread-safe queue
         if self.server.no_delay:
@@ -87,7 +87,7 @@ class AsyncTcpSocket(asyncio.Protocol):
 
             self.recv_buffer.concat(data)
             data = self.recv_buffer[:self.transport_dict['size']]
-            self.recv_buffer=self.recv_buffer[self.transport_dict['size']:]
+            self.recv_buffer = self.recv_buffer[self.transport_dict['size']:]
 
             if self.transport_dict['packet'] is None:
                 self.transport_dict['packet'] = data
@@ -190,7 +190,7 @@ class AsyncTcpServer(asyncio.Protocol):
         self.port = port
         self.no_delay = no_delay
 
-        self.sock= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         self.sock.bind((bind_addr, port))
@@ -199,8 +199,8 @@ class AsyncTcpServer(asyncio.Protocol):
         AsyncController.instance().add(self)
         
         self.loop = asyncio.get_event_loop()
-        #coro = self.loop.create_server(lambda: self, sock=self.sock)
-        #(self.server,_)=self.loop.run_until_complete(coro)
+        # coro = self.loop.create_server(lambda: self, sock=self.sock)
+        # (self.server,_)=self.loop.run_until_complete(coro)
         self.server = self.loop.create_server(lambda: self, sock=self.sock)
 
         if self.callback is not None:
@@ -222,7 +222,6 @@ class AsyncTcpServer(asyncio.Protocol):
         except Exception as e:
             print(e)
             traceback.print_exc()
-
 
     def close(self):
         if not self.is_closing:
