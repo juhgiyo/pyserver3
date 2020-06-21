@@ -2,3 +2,4 @@ MANIFEST
 dist/
 pyserver3.egg-info/
 .idea/
+.DS_Store
